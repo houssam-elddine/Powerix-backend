@@ -11,18 +11,18 @@ class CourController extends Controller
     {
         return response()->json([
             'status' => 200,
-            'data' => Cour::with('salle')->get()
+            'data' => Cour::with(['salle','abonnement'])->get()
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'salle_id' => 'required|exists:salles,id',
             'nom' => 'required|string|max:255',
             'horaire_deb' => 'required|date_format:H:i',
             'horaire_fin' => 'required|date_format:H:i|after:horaire_deb',
             'capacite' => 'required|integer|min:1',
-            'salle_id' => 'required|exists:salles,id',
         ]);
 
         $cours = Cour::create($validated);
@@ -38,18 +38,18 @@ class CourController extends Controller
     {
         return response()->json([
             'status' => 200,
-            'data' => $cour->load('salle')
+            'data' => $cour->load(['salle','abonnement'])
         ]);
     }
 
     public function update(Request $request, Cour $cour)
     {
         $validated = $request->validate([
+            'salle_id' => 'sometimes|exists:salles,id',
             'nom' => 'sometimes|string|max:255',
             'horaire_deb' => 'sometimes|date_format:H:i',
             'horaire_fin' => 'sometimes|date_format:H:i|after:horaire_deb',
             'capacite' => 'sometimes|integer|min:1',
-            'salle_id' => 'sometimes|exists:salles,id',
         ]);
 
         $cour->update($validated);

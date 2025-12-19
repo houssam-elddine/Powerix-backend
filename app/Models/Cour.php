@@ -18,4 +18,9 @@ class Cour extends Model
     {
         return $this->belongsTo(Salle::class);
     }
+
+    public function abonnement()
+    {
+        return $this->hasMany(Abonnement::class);
+    } 
 }

@@ -5,11 +5,13 @@ use App\Http\Controllers\CourController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SalleController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\AbonnementController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::apiResource('abonnements', AbonnementController::class);
     Route::apiResource('salles', SalleController::class);
     Route::apiResource('cours', CourController::class);
     Route::apiResource('users', UserController::class);
