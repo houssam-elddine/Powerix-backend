@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Cour extends Model
 {
     protected $fillable = [
+        'coach_id',
         'nom',
         'horaire_deb',
         'horaire_fin',

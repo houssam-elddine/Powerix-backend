@@ -12,4 +12,9 @@ class Abonnement extends Model
         'duree',
         'prix'
     ];
+
+    public function cour()
+    {
+        return $this->belongsTo(Cour::class);
+    }
 }
