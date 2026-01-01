@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Salle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SalleController extends Controller
 {
@@ -11,7 +10,7 @@ class SalleController extends Controller
     {
         return response()->json([
             'status' => 200,
-            'data' => Salle::all()
+            'data' => Salle::with('cours')->get()
         ]);
     }
 
@@ -21,13 +20,19 @@ class SalleController extends Controller
             'nom' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'capacite' => 'required|integer|min:1',
+            'img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
 
-        Salle::create($validated);
+        if ($request->hasFile('img')) {
+            $path = $request->file('img')->store('images', 'public');
+            $validated['img'] = $path;
+        }
 
+        $salle = Salle::create($validated);
         return response()->json([
             'status' => 201,
             'message' => 'Salle created successfully',
+            'data' => $salle
         ], 201);
     }
 
@@ -35,7 +40,7 @@ class SalleController extends Controller
     {
         return response()->json([
             'status' => 200,
-            'data' => $salle
+            'data' => $salle->load('cours')
         ]);
     }
 
@@ -45,20 +50,31 @@ class SalleController extends Controller
             'nom' => 'sometimes|string|max:255',
             'address' => 'sometimes|string|max:255',
             'capacite' => 'sometimes|integer|min:1',
+            'img' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:20480', 
         ]);
 
-        $salle->update($validated);
+        if ($request->hasFile('img')) {
+            if ($salle->img && Storage::disk('public')->exists($salle->img)) {
+                Storage::disk('public')->delete($salle->img);
+            }
+            $path = $request->file('img')->store('images', 'public');
+            $validated['img'] = $path;
+        }
 
+        $salle->update($validated);
         return response()->json([
             'status' => 200,
             'message' => 'Salle updated successfully',
+            'data' => $salle
         ]);
     }
 
     public function destroy(Salle $salle)
     {
+        if ($salle->img && Storage::disk('public')->exists($salle->img)) {
+            Storage::disk('public')->delete($salle->img);
+        }
         $salle->delete();
-
         return response()->json([
             'status' => 200,
             'message' => 'Salle deleted successfully'

@@ -9,6 +9,7 @@ class Cour extends Model
     protected $fillable = [
         'coach_id',
         'nom',
+        'img',
         'horaire_deb',
         'horaire_fin',
         'capacite',

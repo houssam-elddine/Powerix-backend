@@ -11,8 +11,18 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::apiResource('salles', SalleController::class);
-    Route::apiResource('cours', CourController::class);
+    Route::get('/salles', [SalleController::class , 'index']);
+    Route::post('/salles', [SalleController::class , 'store']);
+    Route::get('/salles/{salle}', [SalleController::class , 'show']);
+    Route::post('/salles/{salle}', [SalleController::class , 'update']);
+    Route::delete('/salles/{salle}', [SalleController::class , 'destroy']);
+    Route::get('/cours', [CourController::class , 'index']);
+    Route::post('/cours', [CourController::class , 'store']);
+    Route::get('/cours/{cour}', [CourController::class , 'show']);
+    Route::post('/cours/{cour}', [CourController::class , 'update']);
+    Route::put('/cours/{cour}', [CourController::class, 'update']);
+    Route::delete('/cours/{cour}', [CourController::class , 'destroy']);
+
     Route::apiResource('users', UserController::class);
     Route::get('/inscriptions', [InscirptionController::class , 'index']);
     Route::put('/inscriptions/{inscirption}', [InscirptionController::class , 'update']);
@@ -25,7 +35,9 @@ Route::middleware(['auth:sanctum', 'role:coach'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
+    Route::get('salle/{cour}',[SalleController::class , 'show']);
     Route::get('salle',[SalleController::class , 'index']);
+    Route::get('cour/{cour}',[CourController::class , 'show']);
     Route::get('cour',[CourController::class , 'index']);
     Route::post('/inscription', [InscirptionController::class , 'store']);
     Route::get('/inscription/{client_id}', [InscirptionController::class , 'index']);

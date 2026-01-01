@@ -8,16 +8,21 @@ use Illuminate\Http\Request;
 
 class InscirptionController extends Controller
 {
-    public function index($client_id)
+    public function index($client_id = null)
     {
-        $inscriptions = Inscirption::with(['cour', 'abonnement'])
-            ->where('client_id', $client_id)
-            ->get();
+        $query = Inscirption::with(['client' ,'cour', 'abonnement']); // تغيير إلى abonnement (hasMany)
+
+        if ($client_id) {
+            $query->where('client_id', $client_id);
+        }
+
+        $inscriptions = $query->get();
 
         return response()->json([
             'status' => 200,
             'data' => $inscriptions
         ]);
+        
     }
 
 

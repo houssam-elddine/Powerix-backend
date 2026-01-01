@@ -19,4 +19,9 @@ class Inscirption extends Model
     {
         return $this->belongsTo(Abonnement::class);
     }
+
+    public function client()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
