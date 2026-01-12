@@ -151,4 +151,5 @@ class CourController extends Controller
             'message' => 'Cours and related Abonnements deleted successfully'
         ]);
     }
+
 }

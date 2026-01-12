@@ -10,7 +10,7 @@ class SalleController extends Controller
     {
         return response()->json([
             'status' => 200,
-            'data' => Salle::with('cours')->get()
+            'data' => Salle::with('cours.abonnement')->get()
         ]);
     }
 
@@ -40,7 +40,7 @@ class SalleController extends Controller
     {
         return response()->json([
             'status' => 200,
-            'data' => $salle->load('cours')
+            'data' => $salle->load('cours.abonnement')
         ]);
     }
 

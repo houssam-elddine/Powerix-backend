@@ -17,4 +17,5 @@ class Salle extends Model
     {
         return $this->hasMany(Cour::class);
     }
+
 }

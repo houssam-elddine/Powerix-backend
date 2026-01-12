@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CourController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SalleController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\InscirptionController;
 
@@ -35,7 +36,7 @@ Route::middleware(['auth:sanctum', 'role:coach'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
-    Route::get('salle/{cour}',[SalleController::class , 'show']);
+    Route::get('salle/{salle}',[SalleController::class , 'show']);
     Route::get('salle',[SalleController::class , 'index']);
     Route::get('cour/{cour}',[CourController::class , 'show']);
     Route::get('cour',[CourController::class , 'index']);
@@ -45,5 +46,7 @@ Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::put('/profile/update', [ProfileController::class, 'updateProfile']);
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
