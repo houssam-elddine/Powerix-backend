@@ -142,8 +142,7 @@ class CourController extends Controller
             Storage::disk('public')->delete($cour->img);
         }
 
-        // حذف كل الاشتراكات المرتبطة
-        $cour->abonnement()->delete();
+       $cour->abonnement()->delete();
         $cour->delete();
 
         return response()->json([

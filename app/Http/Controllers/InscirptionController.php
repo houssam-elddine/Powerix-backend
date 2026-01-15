@@ -91,6 +91,7 @@ public function store(Request $request)
             ->whereHas('cour', function ($query) {
                 $query->where('coach_id', auth()->id());
             })
+            ->where('etat', 'valider')           // ← simple where, cleaner & correct
             ->get();
 
         return response()->json([
