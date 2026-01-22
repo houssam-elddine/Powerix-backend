@@ -21,7 +21,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/cours', [CourController::class , 'store']);
     Route::get('/cours/{cour}', [CourController::class , 'show']);
     Route::post('/cours/{cour}', [CourController::class , 'update']);
-    Route::put('/cours/{cour}', [CourController::class, 'update']);
     Route::delete('/cours/{cour}', [CourController::class , 'destroy']);
 
     Route::apiResource('users', UserController::class);

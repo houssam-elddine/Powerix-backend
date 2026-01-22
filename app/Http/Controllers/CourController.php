@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Cour;
 use App\Models\Abonnement;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 
 class CourController extends Controller
 {
     public function index($coach_id = null)
     {
-        $query = Cour::with(['salle', 'abonnement']); // تغيير إلى abonnement (hasMany)
-
+        $query = Cour::with(['salle', 'abonnement']); 
         if ($coach_id) {
             $query->where('coach_id', $coach_id);
         }
@@ -35,19 +35,17 @@ class CourController extends Controller
             'horaire_fin' => 'required|date_format:H:i|after:horaire_deb',
             'capacite' => 'required|integer|min:1',
             'img' => 'required|image|mimes:jpeg,png,jpg,gif|max:20480',
-            'abonnements' => 'required|array|min:1', // array من الاشتراكات
+            'abonnements' => 'required|array|min:1', 
             'abonnements.*.nom' => 'required|string|max:255',
             'abonnements.*.prix' => 'required|numeric|min:0',
             'abonnements.*.duree' => 'required|integer|min:1',
         ]);
 
-        // تحميل الصورة
         if ($request->hasFile('img')) {
             $path = $request->file('img')->store('images', 'public');
             $validated['img'] = $path;
         }
 
-        // إنشاء الدورة
         $cour = Cour::create([
             'coach_id' => $validated['coach_id'],
             'salle_id' => $validated['salle_id'],
@@ -58,7 +56,6 @@ class CourController extends Controller
             'img' => $validated['img'],
         ]);
 
-        // إنشاء عدة اشتراكات
         foreach ($validated['abonnements'] as $abonnementData) {
             Abonnement::create([
                 'cour_id' => $cour->id,
@@ -68,7 +65,6 @@ class CourController extends Controller
             ]);
         }
 
-        // تحميل الدورة مع الاشتراكات
         $cour->load('abonnement');
 
         return response()->json([
@@ -92,18 +88,21 @@ class CourController extends Controller
             'coach_id' => 'sometimes|exists:users,id',
             'salle_id' => 'sometimes|exists:salles,id',
             'nom' => 'sometimes|string|max:255',
-            'horaire_deb' => 'sometimes|date_format:H:i',
-            'horaire_fin' => 'sometimes|date_format:H:i|after:horaire_deb',
+            'horaire_deb' => 'sometimes|date_format:H:i:s',
+            'horaire_fin' => 'sometimes|date_format:H:i:s|after:horaire_deb',
             'capacite' => 'sometimes|integer|min:1',
             'img' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
             'abonnements' => 'sometimes|array',
-            'abonnements.*.id' => 'sometimes|exists:abonnements,id|cour_id,' . $cour->id,
+            'abonnements.*.id' => [
+                'sometimes',
+                'exists:abonnements,id',
+                Rule::exists('abonnements', 'id')->where('cour_id', $cour->id),
+            ],
             'abonnements.*.nom' => 'required_with:abonnements|string|max:255',
             'abonnements.*.prix' => 'required_with:abonnements|numeric|min:0',
             'abonnements.*.duree' => 'required_with:abonnements|integer|min:1',
         ]);
 
-        // تحديث الصورة
         if ($request->hasFile('img')) {
             if ($cour->img && Storage::disk('public')->exists($cour->img)) {
                 Storage::disk('public')->delete($cour->img);
@@ -114,7 +113,6 @@ class CourController extends Controller
 
         $cour->update($validated);
 
-        // تحديث الاشتراكات إذا وجدت
         if (isset($validated['abonnements'])) {
             foreach ($validated['abonnements'] as $abData) {
                 if (isset($abData['id'])) {

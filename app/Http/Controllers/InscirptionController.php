@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cour;
 use App\Models\Inscirption;
 use Illuminate\Http\Request;
 
@@ -10,7 +9,7 @@ class InscirptionController extends Controller
 {
     public function index($client_id = null)
     {
-        $query = Inscirption::with(['client' ,'cour', 'abonnement']); // تغيير إلى abonnement (hasMany)
+        $query = Inscirption::with(['client' ,'cour', 'abonnement']); 
 
         if ($client_id) {
             $query->where('client_id', $client_id);
@@ -91,7 +90,7 @@ public function store(Request $request)
             ->whereHas('cour', function ($query) {
                 $query->where('coach_id', auth()->id());
             })
-            ->where('etat', 'valider')           // ← simple where, cleaner & correct
+            ->where('etat', 'valider')           
             ->get();
 
         return response()->json([
